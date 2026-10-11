@@ -1,0 +1,29 @@
+# Operating System build artifacts
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.exe
+bin/
+build/
+out/
+
+# Crash Archaeologist output logs & reports
+reports/*.txt
+reports/*.json
+!reports/.gitkeep
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary test traces
+*.log
+*.dump
+core
+core.*
