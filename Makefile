@@ -37,3 +37,23 @@ clean:
 
 test:
 	@echo "Run unit tests and workloads..."
+
+HOOK_SRCS = src/collector/collector.c \
+            src/collector/mem_hook.c \
+            src/collector/thread_hook.c \
+            src/collector/syscall_hook.c \
+            src/collector/ipc_hook.c \
+            src/buffer/ring_buffer.c
+
+HOOK_TARGET = bin/libcrashhooks.so
+
+.PHONY: hooks hook-test
+
+$(HOOK_TARGET): $(HOOK_SRCS) include/collector.h include/event.h include/buffer.h | $(BIN_DIR)
+	$(CC) $(CFLAGS) -fPIC -shared $(HOOK_SRCS) -o $@ -ldl -pthread
+
+hooks: $(HOOK_TARGET)
+
+hook-test: $(HOOK_TARGET)
+	$(CC) $(CFLAGS) tests/workloads/hook_test.c -o bin/hook_test -pthread
+	LD_PRELOAD="$(CURDIR)/$(HOOK_TARGET)" ./bin/hook_test
