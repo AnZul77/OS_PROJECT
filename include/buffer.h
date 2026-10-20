@@ -3,6 +3,7 @@
 
 #include "event.h"
 #include <stdbool.h>
+#include <pthread.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,10 +14,11 @@ extern "C" {
 typedef struct {
     crash_event_t *events;
     size_t capacity;
-    size_t head;            /* Next write index */
-    size_t count;           /* Total valid items currently stored */
-    uint64_t next_seq;      /* Next sequence id */
-    bool frozen;            /* When true, buffer preserves history and forbids writes */
+    size_t head;                /* Next write index */
+    size_t count;               /* Total valid items currently stored */
+    uint64_t next_seq;          /* Next sequence id */
+    volatile bool frozen;       /* When true, buffer preserves history and forbids writes */
+    pthread_mutex_t lock;       /* Mutex guarding head/count during multithreaded writes */
 } ring_buffer_t;
 
 /* Ring buffer lifecycle API */
