@@ -64,15 +64,10 @@ static void handle_crash_event(int signo, siginfo_t *info) {
     }
     g_has_crashed = true;
     
-    /* Step 1: Immediately freeze the flight recorder */
-    if (g_active_ring_buffer) {
-        ring_buffer_freeze(g_active_ring_buffer);
-    }
-    
-    /* Step 2: Collect process environment snapshot */
+    /* Step 1: Collect process environment snapshot */
     state_collector_capture(&g_last_crash_state, signo, info);
     
-    /* Step 3: Record terminal crash event into buffer if not completely full */
+    /* Step 2: Record terminal crash event into buffer before freezing */
     if (g_active_ring_buffer) {
         crash_event_t crash_ev;
         memset(&crash_ev, 0, sizeof(crash_ev));
@@ -85,8 +80,10 @@ static void handle_crash_event(int signo, siginfo_t *info) {
         crash_ev.fd_or_status = signo;
         strncpy(crash_ev.label, crash_signal_name(signo), sizeof(crash_ev.label) - 1);
         
-        /* Force record crash marker */
         ring_buffer_record(g_active_ring_buffer, &crash_ev);
+        
+        /* Step 3: Freeze the flight recorder immediately */
+        ring_buffer_freeze(g_active_ring_buffer);
     }
     
     /* Async-safe diagnostic announcement */

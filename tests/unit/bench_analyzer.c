@@ -15,14 +15,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #define BENCH_CAPACITY 8192
 #define BENCH_ITERATIONS 100
 
 static double get_time_sec(void) {
+#if defined(_WIN32)
+    static LARGE_INTEGER freq;
+    static int initialized = 0;
+    if (!initialized) {
+        QueryPerformanceFrequency(&freq);
+        initialized = 1;
+    }
+    LARGE_INTEGER counter;
+    QueryPerformanceCounter(&counter);
+    return (double)counter.QuadPart / (double)freq.QuadPart;
+#elif defined(CLOCK_MONOTONIC)
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
+#else
     struct timespec ts;
     timespec_get(&ts, TIME_UTC);
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
+#endif
 }
 
 int main(void) {

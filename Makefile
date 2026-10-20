@@ -1,5 +1,5 @@
 CC ?= gcc
-CFLAGS ?= -Wall -Wextra -O2 -Iinclude -pthread
+CFLAGS ?= -Wall -Wextra -O2 -Iinclude -Isrc/analyzer -pthread
 LDFLAGS ?= -pthread
 
 BUILD_DIR = build
