@@ -1,10 +1,12 @@
 #ifndef CRASH_COLLECTOR_H
 #define CRASH_COLLECTOR_H
 
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <signal.h>
 #include "event.h"
 #include "buffer.h"
-#include <signal.h>
-#include <stdbool.h>
 
 #ifdef _WIN32
 #ifndef HAVE_SIGINFO_T
@@ -72,6 +74,31 @@ uint32_t crash_get_current_tid(void);
 
 /* Global ring buffer pointer accessible to hooks */
 extern ring_buffer_t *g_active_ring_buffer;
+
+/* --- Dev 2: Runtime Interception Hooks APIs --- */
+
+/* Initialise and shut down the event collector */
+int collector_init(void);
+void collector_shutdown(void);
+
+/*
+ * Record one event into the active flight buffer.
+ *
+ * category: event category defined in event.h
+ * type:     event type defined in event.h
+ * addr:     related memory address, if any
+ * size:     related size or byte count
+ * status:   operation result, file descriptor, or error code
+ * label:    short description of the event
+ */
+void collector_record_event(
+    event_category_t category,
+    event_type_t type,
+    uintptr_t addr,
+    size_t size,
+    int32_t status,
+    const char *label
+);
 
 #ifdef __cplusplus
 }
