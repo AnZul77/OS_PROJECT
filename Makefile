@@ -25,6 +25,12 @@ HOOK_SRCS = src/collector/collector.c \
             src/collector/thread_hook.c \
             src/collector/syscall_hook.c \
             src/collector/ipc_hook.c \
+            src/collector/signal_handler.c \
+            src/collector/state_collector.c \
+            src/analyzer/correlator.c \
+            src/analyzer/causal_graph.c \
+            src/analyzer/root_cause.c \
+            src/reporter/report_generator.c \
             src/buffer/ring_buffer.c
 
 HOOK_TARGET = $(BIN_DIR)/libcrashhooks.so

@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 
 #include "collector.h"
+#include "signals.h"
 #include "buffer.h"
 
 #include <pthread.h>
@@ -39,6 +40,7 @@ int collector_init(void)
         return -1;
     }
 
+    signal_handler_install(&event_buffer);
     collector_ready = 1;
     return 0;
 }

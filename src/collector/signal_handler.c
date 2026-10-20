@@ -94,6 +94,16 @@ static void handle_crash_event(int signo, siginfo_t *info) {
             g_last_crash_state.crashing_tid);
     fprintf(stderr, "[CRASH ARCHAEOLOGIST] Flight buffer frozen with %zu events preserved.\n",
             ring_buffer_get_count(g_active_ring_buffer));
+
+    /* Step 4: Trigger Dev 3 Causal Analysis Engine & Report Generation */
+    if (g_active_ring_buffer) {
+        crash_analysis_result_t result;
+        if (analyze_crash(g_active_ring_buffer, &result) == 0) {
+            generate_crash_report(&result, NULL);
+            generate_crash_report(&result, "reports/latest_crash_report.json");
+            generate_crash_report(&result, "reports/latest_crash_report.txt");
+        }
+    }
 }
 
 #ifdef _WIN32
