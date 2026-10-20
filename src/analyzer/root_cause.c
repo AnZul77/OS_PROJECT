@@ -366,9 +366,9 @@ int analyze_crash(const ring_buffer_t *rb, crash_analysis_result_t *out_result) 
         /* If a fatal signal was captured, test signal-dependent failure patterns */
         if (detect_use_after_free(events, count, sig_ev, out_result)) {
             diagnosed = true;
-        } else if (detect_low_address_segfault(events, count, sig_ev, out_result)) {
-            diagnosed = true;
         } else if (detect_ipc_failure(events, count, sig_ev, out_result)) {
+            diagnosed = true;
+        } else if (detect_low_address_segfault(events, count, sig_ev, out_result)) {
             diagnosed = true;
         } else if (detect_resource_exhaustion(events, count, sig_ev, out_result)) {
             diagnosed = true;
